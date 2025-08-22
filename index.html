@@ -1,0 +1,79 @@
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Click&go - Tu Tienda Online</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <script>
+      // Verificar sesión antes de cargar la tienda
+    const user = localStorage.getItem("sessionUser");
+    if (!user) {
+        window.location.href = "login.html";
+    }
+    </script>
+
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <img src="./assets/image3.svg" alt="LOGO" class="logo">
+            <div class="controls">
+                <input type="text" class="search-input" placeholder="Buscar productos...">
+                <select class="sort-select">
+                    <option value="">Ordenar por</option>
+                    <option value="price-asc">Precio: Menor a Mayor</option>
+                    <option value="price-desc">Precio: Mayor a Menor</option>
+                    <option value="title-asc">Nombre: A-Z</option>
+                    <option value="title-desc">Nombre: Z-A</option>
+                    <option value="rating-desc">Mejor valorados</option>
+                </select>
+                <button class="cart-button" id="cartButton">
+                    🛒 Carrito
+                    <span class="cart-count" id="cartCount">0</span>
+                </button>
+                <button onclick="logout()" class="cart-button">Cerrar Sesión</button>
+            </div>
+        </div>
+
+        <!-- Botones de categorías -->
+        <div class="categories">
+            <button class="category-btn" data-category="" title="Todas">🌐</button>
+            <button class="category-btn" data-category="electronics" title="Electrónica"><img src="./assets/pcLogo.png" alt=""></button>
+            <button class="category-btn" data-category="women's clothing" title="Ropa Mujer"><img src="./assets/vestidoLogo.png" alt=""></button>
+            <button class="category-btn" data-category="jewelery" title="Joyería"><img src="./assets/anilloLogo.png" alt=""></button>
+            <button class="category-btn" data-category="men's clothing" title="Ropa Hombre"><img src="./assets/CamisaLogo.png" alt=""></button>
+        </div>
+
+        <!-- Loading -->
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            Cargando productos...
+        </div>
+
+        <!-- Products Grid -->
+        <div class="products" id="products"></div>
+    </div>
+
+    <!-- Cart Modal -->
+    <div class="cart-modal" id="cartModal">
+        <div class="cart-content">
+            <div class="cart-header">
+                <h2 class="cart-title">Mi Carrito</h2>
+                <button class="close-cart" id="closeCart">✕</button>
+            </div>
+            <div id="cartItems"></div>
+            <div class="cart-total" id="cartTotal"></div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script type="module" src="main.js"></script>
+    <script>
+    function logout() {
+        localStorage.removeItem("sessionUser");
+        window.location.href = "login.html";
+    }
+    </script>
+</body>
+</html>
