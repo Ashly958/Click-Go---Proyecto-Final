@@ -1,10 +1,14 @@
 import { ProductCard } from "./productCard.js";
 import { Cart } from "./cart.js";
 
-// Variables globales para el estado de la aplicación
+// Variables globales
 let products = [];
 let filteredProducts = [];
 let selectedCategory = "";
+
+// Variables para paginación
+let currentPage = 1;
+const itemsPerPage = 6;
 
 // Instancia del carrito
 const cart = new Cart();
@@ -17,6 +21,7 @@ const sortSelect = document.querySelector('.sort-select');
 const cartButton = document.getElementById('cartButton');
 const cartModal = document.getElementById('cartModal');
 const closeCart = document.getElementById('closeCart');
+const paginationContainer = document.getElementById("pagination"); // ⬅️ Nuevo
 
 // Función principal para cargar productos
 async function fetchProducts() {
@@ -36,18 +41,73 @@ async function fetchProducts() {
     }
 }
 
-// Renderizar productos
+// Renderizar productos con paginación
 function renderProducts() {
     if (filteredProducts.length === 0) {
         productsContainer.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: white; padding: 40px;"><h2>No se encontraron productos</h2><p>Intenta con otros filtros de búsqueda</p></div>';
+        paginationContainer.innerHTML = ""; // limpiar paginación
         return;
     }
 
     productsContainer.innerHTML = '';
-    filteredProducts.forEach(product => {
+
+    // 🔹 Calcular inicio y fin de la página
+    const start = (currentPage - 1) * itemsPerPage;
+    const end = start + itemsPerPage;
+    const paginatedProducts = filteredProducts.slice(start, end);
+
+    // Renderizar solo productos de la página actual
+    paginatedProducts.forEach(product => {
         const card = ProductCard(product, cart);
         productsContainer.appendChild(card);
     });
+
+    renderPagination();
+}
+
+// Renderizar botones de paginación
+function renderPagination() {
+    const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
+
+    paginationContainer.innerHTML = "";
+
+    if (totalPages <= 1) return; // Si solo hay 1 página no mostramos nada
+
+    // Botón anterior
+    if (currentPage > 1) {
+        const prevBtn = document.createElement("button");
+        prevBtn.textContent = "⟨ Anterior";
+        prevBtn.addEventListener("click", () => {
+            currentPage--;
+            renderProducts();
+        });
+        paginationContainer.appendChild(prevBtn);
+    }
+
+    // Botones de número
+    for (let i = 1; i <= totalPages; i++) {
+        const pageBtn = document.createElement("button");
+        pageBtn.textContent = i;
+        if (i === currentPage) {
+            pageBtn.classList.add("active"); // puedes darle estilo en CSS
+        }
+        pageBtn.addEventListener("click", () => {
+            currentPage = i;
+            renderProducts();
+        });
+        paginationContainer.appendChild(pageBtn);
+    }
+
+    // Botón siguiente
+    if (currentPage < totalPages) {
+        const nextBtn = document.createElement("button");
+        nextBtn.textContent = "Siguiente ⟩";
+        nextBtn.addEventListener("click", () => {
+            currentPage++;
+            renderProducts();
+        });
+        paginationContainer.appendChild(nextBtn);
+    }
 }
 
 // Filtrar productos
@@ -63,6 +123,7 @@ function filterProducts() {
     });
 
     sortProducts();
+    currentPage = 1; // resetear a página 1
     renderProducts();
 }
 
@@ -97,6 +158,7 @@ function setupEventListeners() {
     // Ordenar
     sortSelect.addEventListener('change', () => {
         sortProducts();
+        currentPage = 1;
         renderProducts();
     });
 
@@ -104,9 +166,7 @@ function setupEventListeners() {
     const categoryButtons = document.querySelectorAll('.category-btn');
     categoryButtons.forEach(btn => {
         btn.addEventListener('click', () => {
-            // Quitar activo de todos
             categoryButtons.forEach(b => b.classList.remove('active'));
-            // Activar el clicado
             btn.classList.add('active');
 
             selectedCategory = btn.getAttribute("data-category");
@@ -149,7 +209,7 @@ function showError(message) {
     hideLoading();
 }
 
-// Inicializar la aplicación
+// Inicializar
 async function initApp() {
     try {
         cart.loadFromStorage(); 
