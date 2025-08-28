@@ -158,7 +158,7 @@ export class Cart {
         if (this.items.length === 0) return;
 
         const total = this.getTotal();
-        alert(`¡Gracias por tu compra!\nTotal: $${total.toFixed(2)}\n\nEsta es una demo, no se procesará ningún pago real.`);
+        alert(`¡Gracias por elegir Click & Go 🌺!\n¡Gracias por tu compra!\nTotal: $${total.toFixed(2)}\n\nEsta es una simulación, no se procesará ningún pago real.\n\nEsperamos verte pronto...  \n Recuerda que fuiste asesorado por Ashly, Justin y Duban 🌱...`);
 
         this.items = [];
         this.saveToStorage();
